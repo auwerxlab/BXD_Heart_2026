@@ -7,13 +7,6 @@ library(parallel)
 ## set analysis parameters
 ################################################################################
 
-# Directory containing the R/qtl2 input files prepared as described here:
-# https://kbroman.org/qtl2/assets/vignettes/input_files.html
-input_dir       <- "./Data/QTL_mapping/qtl_processed_inputs/average_lipidomic/CD_HFD"
-# data type
-input_data_type <- "average_lipidomic"
-# condition
-input_condition <- "CD_HFD"
 # nb. permutations
 nbPerm          <- 5000
 # significance threshold
@@ -32,11 +25,15 @@ overwrite       <- F
 ## run analysis
 ################################################################################
 
-set.seed(22)
-qtlResults <- lapply(input_dir, function(dirQTL){
-  # dirQTL <- input_dir[1]
 
-  input_data_type      <- tail(unlist(strsplit(dirQTL, "/")), 2)[1]
+input_dirs <- list.dirs("./Data/QTL_mapping/qtl_processed_inputs")
+input_dirs <- sort(analysisFolder[grepl("CD$|HFD$", analysisFolder)])
+
+set.seed(22)
+qtlResults <- lapply(input_dirs, function(dirQTL){
+  # dirQTL <- input_dirs[1]
+
+  input_data_type <- tail(unlist(strsplit(dirQTL, "/")), 2)[1]
   input_condition <- tail(unlist(strsplit(dirQTL, "/")), 1)
   
   dirSave <- paste0(dirQTL_outputs, "/", input_data_type)

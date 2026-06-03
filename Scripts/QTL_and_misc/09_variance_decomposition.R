@@ -58,8 +58,6 @@ lipid.df                   <- log2(lipid.df + 1)
 lipid.df                   <- lipid.df[, colSums(is.na(lipid.df)) < 0.5 * nrow(lipid.df)]
 
 
-
-
 features_list.all <- list("pheno"        = pheno.ind.df,
                           "pheno_fasted" = pheno.ind.fasted.df,
                           "protein"      = prot.df,
@@ -89,8 +87,7 @@ tt      <- lapply(names(features_list.all), function(x){
   df.x        <- features_list.all[[x]]
   var.df.list <- pbmcapply::pbmclapply(mc.cores = nbCores, X = colnames(df.x), FUN = function(y){
     # y <- colnames(df.x)[1]
-    # y <- "HexCer[NS] d18:0_22:1_RT_12.391"
-    
+
     df.y              <- dplyr::select(df.x, dplyr::all_of(y))
     df.y$strain       <- factor(gsub("_.*", "", rownames(df.y)))
     df.y$diet         <- factor(ifelse(grepl("CD", rownames(df.y)), "CD", "HFD"))
@@ -106,8 +103,7 @@ tt      <- lapply(names(features_list.all), function(x){
     rownames(kin.mat_CD_HFD) <- colnames(kin.mat_CD_HFD) <- c(paste0(rownames(kin.mat), "_CD"), paste0(rownames(kin.mat), "_HFD"))
     kin.mat_CD_HFD           <- kin.mat_CD_HFD[order(rownames(kin.mat_CD_HFD)), order(rownames(kin.mat_CD_HFD))]
     
-    # kin.mat_CD_HFD[1:5, 1:5]
-    
+
     kin.mat        <- kin.mat[rownames(kin.mat) %in% df.y$strain, colnames(kin.mat) %in% df.y$strain]
     kin.mat_CD_HFD <- kin.mat_CD_HFD[rownames(kin.mat_CD_HFD) %in% df.y$strain_diet, colnames(kin.mat_CD_HFD) %in% df.y$strain_diet]
     

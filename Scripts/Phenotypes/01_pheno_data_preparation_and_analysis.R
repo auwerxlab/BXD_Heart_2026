@@ -18,7 +18,7 @@ if(!dir.exists(saveDir)){
   dir.create(saveDir, recursive = T)
 }
 
-pheno.ind.df <- fread("./Scripts/pheno_formatted.txt", data.table = F, stringsAsFactors = F)
+pheno.ind.df <- fread("./Data/pheno_formatted.txt", data.table = F, stringsAsFactors = F)
 saveRDS(pheno.ind.df, paste0(saveDir, "/pheno_formatted_withMeta.RDS"))
 
 ################################################################################
@@ -160,24 +160,6 @@ remove(pheno_avg_files, pheno.avg.df.list)
 #################################
 ## individuals phenotypic data
 #################################
-
-
-pheno_ind_files   <- list("fed"    = c("./Data/input_data/phenotypic_data/pheno_formatted_withMeta.RDS"))
-pheno.ind.df.list <- lapply(names(pheno_ind_files), function(x){
-  # x <- names(pheno_ind_files)[1]
-  lapply(pheno_ind_files[[x]], function(y){
-    # y <- pheno_ind_files[[x]][1]
-    # print(y)
-    df.y            <- readRDS(y)
-    df.y            <- df.y[!is.na(df.y$animalID), ]
-    df.y$strainDiet <- paste0(df.y$strain, "_", df.y$diet)
-    df.y            <- dplyr::select(df.y, -dplyr::all_of(c("strain", "diet", "correctStrain_RNAseq", "correctStrain", "strainReplicate", "dietReplicate", "labID", "cageID", "cohort", "excludeFromAnalysis", "date_of_birth", "sex", "observations", "usage_comment", "date_diet_start", "date_BA_kinetic", "date_sacrifice", "date_echo")))
-    if(x == "fasted"){
-      colnames(df.y)[colnames(df.y) != "strainDiet"] <- paste0("fasted__", colnames(df.y)[colnames(df.y) != "strainDiet"])
-    }
-    df.y
-  })
-})
 
 pheno.ind.df.fed            <- readRDS("./Data/input_data/phenotypic_data/pheno_formatted_withMeta.RDS")
 # pheno.ind.df.fed            <- readRDS("./pheno_formatted_withMeta.RDS")

@@ -42,7 +42,6 @@ run_wgcna_analysis <- function(omics_df_list,
     
     # 1) Choose powers
     # identify the most suitable β power that makes the network satisfy the scale-free topology
-    # ChatGPT:
     # > corFnc = "bicor" — biweight midcorrelation (robust) rather than Pearson. Why bicor? Lipidomics 
     # often has outliers and non-normal distributions. bicor down-weights outliers and produces more stable 
     # co-expression estimates. If your data is extremely clean and normally distributed, Pearson (cor) can 

@@ -385,7 +385,6 @@ tt        <- lapply(c("allStrains", "commonStrains"), function(ss){
 
 # keep strains overlapping with fed strain
 strains.keep <- readRDS("./Data/input_data/phenotypic_data/pheno_formatted_withMeta.RDS")
-strains.keep <- strains.keep[!strains.keep$excludeFromAnalysis, ]
 table(strains.keep$strain == strains.keep$strain)
 strains.keep <- stringr::str_sort(unique(strains.keep$strain), numeric = T)
 

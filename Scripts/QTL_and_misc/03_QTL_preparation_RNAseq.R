@@ -22,24 +22,6 @@ if(!dir.exists(dirQTL_input)){
 ################################################################################
 
 
-mRNA_counts            <- readRDS("./Data/RNAseq_processing/mRNA_counts/geneLevel/STAR_RNAseq_count_matrix_qcPass.RDS")
-meta                   <- readRDS("./Data/RNAseq_processing/QC_genotyping/genoTest_verdict_curated.RDS")
-meta                   <- dplyr::select(meta, c("simplifiedSampleName", "strain", "correctStrain", "diet", "excludeFromAnalysis", "strainConditionReplicate"))
-meta                   <- meta[!meta$excludeFromAnalysis, ]
-meta$strainDiet        <- paste0(meta$correctStrain, "_", meta$diet)
-meta$correctSampleName <- paste0(meta$correctStrain, "_", meta$diet, meta$strainConditionReplicate)
-rownames(meta)         <- meta$correctSampleName
-meta                   <- meta[meta$simplifiedSampleName %in% colnames(mRNA_counts), ]
-identical(meta$simplifiedSampleName, colnames(mRNA_counts))
-colnames(mRNA_counts)  <- plyr::mapvalues(colnames(mRNA_counts), from = meta$simplifiedSampleName, to = meta$correctSampleName)
-identical(rownames(meta), colnames(mRNA_counts))
-meta                   <- meta[match(colnames(mRNA_counts), meta$correctSampleName), ]
-identical(rownames(meta), colnames(mRNA_counts))
-rownames(meta)         <- meta$correctSampleName
-identical(rownames(meta), colnames(mRNA_counts))
-
-
-
 metadata               <- readRDS("./Data/input_data/metadata_RNAseq/metadata_RNAseq.RDS")
 mRNA_counts            <- readRDS("./Data/RNAseq_processing/mRNA_counts/geneLevel/STAR_RNAseq_count_matrix.RDS")
 metadata$strainDiet    <- paste0(metadata$strain, "_", metadata$diet)

@@ -1,50 +1,9 @@
 library(data.table)
 
 
-pheno_ind_files <- c("./Data/input_data/phenotypic_data/pheno_formatted_withMeta.RDS",
-                     "./Data/phenome/phenoData_transformation/pheno_derived_traits_1.RDS")
-pheno.ind.df.list <- lapply(pheno_ind_files, function(y){
-  # y <- pheno_ind_files[1]
-  # print(y)
-  df.y            <- readRDS(y)
-  rownames(df.y)  <- paste0(df.y$strain, "_", df.y$diet, "_", df.y$strainReplicate, "_", df.y$dietReplicate)
-  df.y            <- df.y[!df.y$excludeFromAnalysis, ]
-  df.y            <- df.y[, -c(1:19), drop = F]
-  df.y            <- cbind("sample_id" = rownames(df.y), df.y)
-  df.y
-})
-pheno.ind.df <- Reduce(function(...) merge(..., all = T, by = c("sample_id")), pheno.ind.df.list)
-rownames(pheno.ind.df) <- pheno.ind.df$sample_id
-pheno.ind.df <- dplyr::select(pheno.ind.df, -dplyr::all_of("sample_id"))
-pheno.ind.df[is.na(pheno.ind.df)] <- NA
-
-
-pheno_ind_fasted_files     <- c("./Data/input_data/BXD_fasted_MPD/Auwerx1_submit.csv",
-                                "./Data/phenome/fasted_phenoData_transformation/fasted_pheno_derived_traits_1.RDS")
-pheno.ind.fasted.df.list   <- lapply(pheno_ind_fasted_files, function(y){
-  # y <- pheno_ind_fasted_files[2]
-  # print(y)
-  if(grepl("csv$", y)){
-    df.y <- read.table(y, sep = ",", header = T, stringsAsFactors = F)
-  } else{
-    df.y <- readRDS(y)
-  }
-  # keep only commoin strains
-  df.y            <- df.y[df.y$strain %in% unique(gsub("_.*", "", rownames(pheno.ind.df))), ]
-  stopifnot(all(unique(gsub("_.*", "", rownames(pheno.ind.df))) %in% unique(df.y$strain)))
-  rownames(df.y)  <- paste0(df.y$strain, "_", df.y$diet, "_", df.y$id)
-  cols_rm         <- c("id", "strain", "sex", "diet")
-  df.y            <- dplyr::select(df.y, -dplyr::all_of(cols_rm[cols_rm %in% colnames(df.y)]))
-  df.y            <- cbind("sample_id" = rownames(df.y), df.y)
-  df.y
-})
-pheno.ind.fasted.df <- Reduce(function(...) merge(..., all = T, by = c("sample_id")), pheno.ind.fasted.df.list)
-rownames(pheno.ind.fasted.df) <- pheno.ind.fasted.df$sample_id
-pheno.ind.fasted.df <- dplyr::select(pheno.ind.fasted.df, -dplyr::all_of("sample_id"))
-pheno.ind.fasted.df[is.na(pheno.ind.fasted.df)] <- NA
-colnames(pheno.ind.fasted.df) <- paste0("fasted__", colnames(pheno.ind.fasted.df))
-
-
+pheno.all           <- readRDS("./Data/input_data/phenotypic_data/pheno_formatted_list_all_fed_fasted.RDS")
+pheno.ind.df        <- pheno.all$ind_fed
+pheno.ind.fasted.df <- pheno.all$ind_fasted
 
 
 lipid.derived.list         <- readRDS("./Data/lipidomics/data_processing/BXD_heart_lipidomics_with_derived_features.RDS")
@@ -122,7 +81,7 @@ tt      <- lapply(names(features_list.all), function(x){
       vc             <- as.data.frame(lme4::VarCorr(fit))
       vc$effect_type <- "rndeff"
       
-      # compute fixed term variance (same as done by insight::get_variance, insight::get_variance_fixed and same as suggested by chatGPT)
+      # compute fixed term variance (same as done by insight::get_variance, insight::get_variance_fixed)
       beta  <- lme4::fixef(fit)
       if(!all(names(beta) == "(Intercept)")){
         X            <- model.matrix(terms(fit), data = df.y)

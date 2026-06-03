@@ -8,7 +8,7 @@
 ## Create conda environment
 #########################
 
-ENV_NAME="R_4_4_4"
+ENV_NAME="BXD_Heart_R_4_4_3"
 R_VERSION="4.3.3"
 
 # Make conda available in this non-interactive shell
